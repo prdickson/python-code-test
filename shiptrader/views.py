@@ -10,5 +10,7 @@ class StarshipSerializer(serializers.ModelSerializer):
 
 
 class StarshipViewSet(viewsets.ReadOnlyModelViewSet):
+    """View that allows all starships to be listed"""
+
     queryset = Starship.objects.all()
     serializer_class = StarshipSerializer
