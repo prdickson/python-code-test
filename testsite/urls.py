@@ -17,11 +17,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 
-from shiptrader.views import StarshipViewSet
+from shiptrader.views import StarshipViewSet, ListingViewSet, ListingActiveViewSet
 
 router = routers.DefaultRouter()
 router.register(r'starships', StarshipViewSet)
-
+router.register(r'listings', ListingViewSet)
+router.register(r'listings', ListingActiveViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
