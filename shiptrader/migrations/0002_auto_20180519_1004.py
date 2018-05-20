@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='starship',
             name='name',
-            field=models.CharField(max_length=255, unique=True),
+            field=models.CharField(max_length=255),
             preserve_default=False,
         ),
     ]
