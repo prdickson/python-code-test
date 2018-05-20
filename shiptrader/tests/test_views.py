@@ -32,20 +32,21 @@ class TestStarshipView(TestCase):
             self.assertGreater(starships[i].pop('id'), 0)
             self.assertDictEqual(starships[i], expected_data[i])
 
-    def test_can_get_listings(self):
+    def test_can_create_listings(self):
         ship = Starship.objects.get(name='Ship 1')
 
-        self.client.post(reverse('listing-list'), {'name': 'New Listing 1', 'price': 5,
-                                                   'ship_type': ship.id, 'active': False})
+        response = self.client.post(reverse('listing-list'), {'name': 'New Listing 1', 'price': 5,
+                                                              'ship_type': ship.id, 'active': False})
 
-        listing = Listing.objects.all().first()
+        self.assertEqual(response.status_code, 201)
 
+        listing = Listing.objects.first()
         self.assertEqual(listing.name, 'New Listing 1')
         self.assertEqual(listing.price, 5)
         self.assertEqual(listing.ship_type, ship)
         self.assertEqual(listing.active, False)
 
-    def test_can_create_listings(self):
+    def test_can_get_listings(self):
 
         ship = Starship.objects.get(name='Ship 1')
         Listing.objects.create(name='Another New Listing', price=10, ship_type=ship)
@@ -53,7 +54,6 @@ class TestStarshipView(TestCase):
         response = self.client.get(reverse('listing-list'))
 
         self.assertEqual(response.status_code, 200)
-
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], 'Another New Listing')
         self.assertEqual(response.data[0]['ship_type'], ship.id)
@@ -70,7 +70,6 @@ class TestStarshipView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
-
         ship_ids = [s.id for s in Starship.objects.filter(starship_class='Class 2')]
         self.assertTrue(response.data[0]['ship_type'] in ship_ids)
         self.assertTrue(response.data[1]['ship_type'] in ship_ids)
@@ -82,11 +81,13 @@ class TestStarshipView(TestCase):
         Listing.objects.create(name='Listing', price=15, ship_type=ships[2])
 
         response = self.client.get('{0}?{1}'.format(reverse('listing-list'), urlencode({'ordering': '-price'})))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['price'], 20)
         self.assertEqual(response.data[1]['price'], 15)
         self.assertEqual(response.data[2]['price'], 10)
 
         response = self.client.get('{0}?{1}'.format(reverse('listing-list'), urlencode({'ordering': 'price'})))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['price'], 10)
         self.assertEqual(response.data[1]['price'], 15)
         self.assertEqual(response.data[2]['price'], 20)
@@ -98,11 +99,13 @@ class TestStarshipView(TestCase):
         Listing.objects.create(name='Listing C', price=1, ship_type=ships[2])
 
         response = self.client.get('{0}?{1}'.format(reverse('listing-list'), urlencode({'ordering': '-created'})))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['name'], 'Listing C')
         self.assertEqual(response.data[1]['name'], 'Listing B')
         self.assertEqual(response.data[2]['name'], 'Listing A')
 
         response = self.client.get('{0}?{1}'.format(reverse('listing-list'), urlencode({'ordering': 'created'})))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['name'], 'Listing A')
         self.assertEqual(response.data[1]['name'], 'Listing B')
         self.assertEqual(response.data[2]['name'], 'Listing C')
@@ -111,13 +114,11 @@ class TestStarshipView(TestCase):
 
         listing = Listing.objects.create(name='Listing', price=10, ship_type=Starship.objects.first(), active=False)
 
-        print(reverse('listing-detail', args=[listing.id]))
-
         response = self.client.patch(reverse('listing-detail', args=[listing.id]), json.dumps({'active': True}),
                                      content_type='application/json')
-        listing = Listing.objects.get(id=listing.id)
-
         self.assertEqual(response.status_code, 200)
+
+        listing = Listing.objects.get(id=listing.id)
         self.assertTrue(listing.active)
 
 
