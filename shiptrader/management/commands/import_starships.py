@@ -1,5 +1,5 @@
 import requests
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from shiptrader.models import Starship
 
@@ -18,6 +18,7 @@ class Command(BaseCommand):
             url = response_json['next']
             starships += [build_starship(result) for result in response_json['results']]
 
+        Starship.objects.all().delete()
         Starship.objects.bulk_create(starships)
 
 

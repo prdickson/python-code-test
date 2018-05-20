@@ -1,6 +1,5 @@
 from django.core.management import call_command
 from django.test import TestCase
-from rest_framework.reverse import reverse
 
 from shiptrader.models import Starship
 

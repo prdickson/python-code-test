@@ -35,7 +35,7 @@ class TestStarshipView(TestCase):
     def test_can_get_listings(self):
         ship = Starship.objects.get(name='Ship 1')
 
-        self.client.post(reverse('listing-list'), {'name':'New Listing 1', 'price': 5,
+        self.client.post(reverse('listing-list'), {'name': 'New Listing 1', 'price': 5,
                                                    'ship_type': ship.id, 'active': False})
 
         listing = Listing.objects.all().first()
